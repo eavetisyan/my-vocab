@@ -2,7 +2,7 @@
 """
 Created on Sun Sep 30 14:03:51 2018
 
-@author: Эдуард
+@author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Auxiliary application that prints your current dictionary
 """

@@ -28,9 +28,9 @@ class Application(Tk):
 
 class EntryField(Entry):
     """Subclass of Entry with simplified procedures of displaying and text overwriting"""
-    def show(self, row, column, columnspan = 1):
+    def show(self, row, column, columnspan = 1, sticky = 'W, E, N, S'):
         """Display an expanded entry field"""
-        self.grid(row = row, column = column, columnspan = columnspan, sticky = 'W, E, N, S')
+        self.grid(row = row, column = column, columnspan = columnspan, sticky = sticky)
 
     def overwrite(self, text):
         """Overwrite the content"""
@@ -39,9 +39,9 @@ class EntryField(Entry):
 
 class Inscription(Label):
     """Subclass of Label with simplified procedures of displaying and text overwriting"""
-    def show(self, row, column, rowspan = 1):
+    def show(self, row, column, columnspan = 1, sticky = 'W, E, N, S'):
         """Display an expanded label"""
-        self.grid(row = row, column = column, rowspan = rowspan, sticky = 'W, E, N, S')
+        self.grid(row = row, column = column, columnspan = columnspan, sticky = sticky)
 
     def overwrite(self, text):
         """Overwrite label's text"""
@@ -49,9 +49,9 @@ class Inscription(Label):
 
 class TextBox(Text):
     """Subclass of Text with simplified procedures of displaying and text overwriting"""
-    def show(self, row, column, rowspan = 1):
+    def show(self, row, column, rowspan = 1, sticky = 'W, E, N, S'):
         """Display an expanded text box"""
-        self.grid(row = row, column = column, rowspan = rowspan, sticky = 'W, E, N, S')
+        self.grid(row = row, column = column, rowspan = rowspan, sticky = sticky)
 
     def overwrite(self, text):
         """Overwrite the content"""
