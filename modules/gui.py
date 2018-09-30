@@ -11,21 +11,19 @@ from tkinter import Tk, Button, Entry, Text, Label
 class Application(Tk):
     """Subclass of Tk that forms a window application"""
     def __init__(self, title, geometry, resizable = False):
-        super(Application, self).__init__(title, geometry, resizable)
+        super().__init__()
         self.title(title)
         self.geometry(geometry)
         self.resizable(width = resizable, height = resizable)
 
-class TinTack(Button):
-    """Subclass of Button with ability to create a stack of buttons"""
-    def create_stack_of_buttons(self, root, first_row, column, buttons):
+    def create_stack_of_buttons(self, buttons, first_row, column):
         """Сreate buttons in a loop. The 'buttons' parameter is a dictionary
         whose keys are consists of buttons names,
         and values are names of a binded functions"""
         i = first_row
         for purpose in buttons:
+            Button(self, text = purpose, command = buttons[purpose]).grid(row = i, column = column, sticky = 'W, E, N, S')
             i += 1
-            Button(root, text = purpose, command = buttons[purpose]).grid(row = i, column = column, sticky = 'W, E, N, S')
 
 class EntryField(Entry):
     """Subclass of Entry with simplified procedure of displaying"""
