@@ -7,7 +7,7 @@ Created on Sun Sep 30 21:20:29 2018
 Testing of refactored GUI-code
 """
 
-import modules.gui
+from modules.gui import *
 
 def boo():
     print("boo!")
