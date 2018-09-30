@@ -6,6 +6,7 @@ Created on Sun Sep 30 15:38:50 2018
 ----------------
 Module for creating GUI application using Tkinter library
 """
+
 from tkinter import Tk, Button, Entry, Text, Label
 
 class Application(Tk):
@@ -26,24 +27,33 @@ class Application(Tk):
             i += 1
 
 class EntryField(Entry):
-    """Subclass of Entry with simplified procedure of displaying"""
-    def show_entry_field(self, first_row, length):
+    """Subclass of Entry with simplified procedures of displaying and text overwriting"""
+    def show(self, row, column, columnspan = 1):
         """Display an expanded entry field"""
-        self.grid(row = first_row, columnspan = length, sticky = 'W, E, N, S')
+        self.grid(row = row, column = column, columnspan = columnspan, sticky = 'W, E, N, S')
+
+    def overwrite(self, text):
+        """Overwrite the content"""
+        self.delete('0', 'end')
+        self.insert('0', text)
 
 class Inscription(Label):
-    """Subclass of Label with simplified procedure of text overwriting"""
-    def overwrite_label(self, text):
+    """Subclass of Label with simplified procedures of displaying and text overwriting"""
+    def show(self, row, column, rowspan = 1):
+        """Display an expanded label"""
+        self.grid(row = row, column = column, rowspan = rowspan, sticky = 'W, E, N, S')
+
+    def overwrite(self, text):
         """Overwrite label's text"""
         self.config(text = text)
 
 class TextBox(Text):
-    """Subclass of Text with some additional features"""
-    def show_textbox(self, row, column, rowspan):
+    """Subclass of Text with simplified procedures of displaying and text overwriting"""
+    def show(self, row, column, rowspan = 1):
         """Display an expanded text box"""
         self.grid(row = row, column = column, rowspan = rowspan, sticky = 'W, E, N, S')
 
-    def overwrite_textbox(self, text):
+    def overwrite(self, text):
         """Overwrite the content"""
         self.delete('0.0', 'end')
         self.insert('0.0', text)
