@@ -11,7 +11,7 @@ from tkinter import Tk, Button, Entry, Text, Label
 
 class Application(Tk):
     """Subclass of Tk that forms a window application"""
-    def __init__(self, title, geometry, resizable = False):
+    def __init__(self, title, geometry, resizable):
         super().__init__()
         self.title(title)
         self.geometry(geometry)
