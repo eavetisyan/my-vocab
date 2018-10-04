@@ -5,13 +5,14 @@ Created on Sun Sep 30 15:38:50 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Module for creating GUI application using Tkinter library
+Ver 1.1
 """
 
 from tkinter import Tk, Button, Entry, Text, Label
 
 class Application(Tk):
     """Subclass of Tk that forms a window application"""
-    def __init__(self, title, geometry, resizable):
+    def __init__(self, title, geometry, resizable = False):
         super().__init__()
         self.title(title)
         self.geometry(geometry)
