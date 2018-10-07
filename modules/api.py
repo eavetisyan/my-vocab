@@ -5,10 +5,13 @@ Created on Sun Oct  7 16:27:13 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Module for handling of dictionary
-Ver 1.0
+Ver 2.0
 """
+
 from modules.gui import *
 from itertools import islice
+from random import choice
+from re import sub
 import csv
 
 STATUS_LINE = 1
@@ -23,7 +26,7 @@ COUNTER = 2
 
 class Handling():
     """Dictionary management procedures"""
-    def __init__(self, file_name, word_input, explanation, status_bar):
+    def __init__(self, file_name, word_input, explanation, status_bar, quiz = False, question = None):
         """Get dictionary from CSV-file"""
         self.__file_name = file_name
         self.__word_input = word_input
@@ -35,6 +38,9 @@ class Handling():
             self.__max_guess, self.__min_guess, self.__max_count, self.__min_count = map(int, stats)                            # and save them
             self.__read_thru_n_strings(readed_csv)                                                                              # Cut off headers and stats
             self.__dictionary = {line[WORD] : [line[DESCRIPTION], int(line[COUNTER])] for line in readed_csv}                   # Constructing dictionary as "word : [explanation, guess]" items
+        if quiz is True:
+            self.__question = question
+            self.__get_task()
     
     def __read_thru_n_strings(self, iterable_object, n = 1):
         """Jump from current line to n-distance"""
@@ -172,6 +178,37 @@ class Handling():
     def __sort_dictionary(self, dictionary, reverse = True):
         """Sort dictionary items by guess values"""
         return dict(sorted(dictionary.items(), key = lambda value: value[VALUE][GUESS], reverse = reverse))
-
+    
+    def __get_task(self):
+        """Select the word from the dictionary"""
+        self.__task = choice(list(self.__dictionary.items()))
+        self.__question.overwrite(self.__task[WORD])
+        
+    def implement_answer(self):
+        """One round of the test"""
+        user_answers = self.__split_data(self.__word_input.get())
+        correct_answers = self.__split_data(self.__task[VALUE][EXPLANATION])
+        is_correct = False
+        for answer in user_answers:
+            if answer in correct_answers:
+                is_correct = True
+                break
+        self.__explanation.overwrite(self.__task[WORD] + ":\n" + self.__task[VALUE][EXPLANATION])
+        if is_correct is True:
+            # Update guess and check the stats
+            self.__status_bar.overwrite("You're right!")
+        else:
+            self.__status_bar.overwrite("Wrong")
+        self.__get_task()
+    
+    def __split_data(self, string):
+        """Represent any string as list of words no less than 3 letters"""
+        string = string.lower()
+        string = sub(r" - ", " ", string)                                                                                       # Remove dashes
+        string = sub(r"т\.\w\.", "", string)                                                                                    # Remove abbreviations
+        string = sub(r'\b\w{1,3}\b', '', string)                                                                                # Remove prepositions (words less than 3 letters)
+        string = sub(r'[a-zA-z\.,;<>\"?/\\!\n_\(\)]', '', string)                                                               # Remove Latin alphabet and symbols
+        return string.split()                                                                                                   # Split words by space
+    
 if __name__ == "__main__":
-    input("Please do not run this file. It's just a library!")
+    input("Please do not run this file. It's just a library")
