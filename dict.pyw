@@ -5,7 +5,7 @@ Created on Sun Oct  7 00:12:25 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Application that allows you to create and fill your own dictionary
-Ver 2.1
+Ver 2.2
 """
 
 from modules.gui import *
@@ -101,12 +101,27 @@ class Handling():
                 self.__status_bar.overwrite("This word is already exists!")
         else:
             self.__status_bar.overwrite("Please enter the word")
-
+    
+    def edit_word(self):
+        """Change the explanation of an existing word"""
+        word = self.__get_word()
+        if word:
+            if word in self.__dictionary:
+                guess = self.__dictionary[word][GUESS]
+                self.__dictionary[word] = [self.__explanation.get('0.0', 'end - 1c'), guess]
+                self.__ovewrite_dictionary()
+                self.__status_bar.overwrite(word + " - explanation edited")
+            else:
+                self.__status_bar.overwrite("There is no '" + word + "' in the dictionary")
+        else:
+            self.__status_bar.overwrite("Please enter the word")
+    
     def delete_word(self):
         """Remove word from dictionary"""
         word = self.__get_word()
         if word:
             if word in self.__dictionary:
+                self.__explanation.overwrite(self.__dictionary[word][EXPLANATION])
                 guess = self.__dictionary[word][GUESS]
                 del self.__dictionary[word]
                 if self.__dictionary:                                                                                           # Not empty dictionary case:
@@ -161,7 +176,7 @@ class Handling():
     
 def main():
     """Configure the application and start it"""
-    root = Application(geometry = "449x120", title = "My own dictionary 2.1")
+    root = Application(geometry = "449x145", title = "My own dictionary 2.2")
     word_input = EntryField(root)
     word_input.show(row = 0, column = 0)
 
@@ -169,11 +184,11 @@ def main():
     explanation.show(row = 0, column = 1, rowspan = 5)
 
     status_bar = Inscription(root, text = "Ready to go!")
-    status_bar.show(row = 6, column = 1, columnspan = 6, sticky = "E, S")
+    status_bar.show(row = 7, column = 1, columnspan = 6, sticky = "E, S")
     
     operations = Handling(file_name = "lib/dict.csv", word_input = word_input, explanation = explanation, status_bar = status_bar)
         
-    buttons = {"Find word" : operations.find_word, "Add word" : operations.add_word, "Delete word" : operations.delete_word}
+    buttons = {"Find word" : operations.find_word, "Add word" : operations.add_word, "Edit word" : operations.edit_word, "Delete word" : operations.delete_word}
     root.create_stack_of_buttons(buttons, first_row = 1, column = 0)
     
     root.mainloop()
