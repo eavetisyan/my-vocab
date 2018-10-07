@@ -19,7 +19,7 @@ with shelve.open("lib/dict") as shelve_dictionary:
         input("The CSV-file is already exists")
     except IOError:
         with open("lib/dict.csv", "w") as csv_file:
-            stats_header = [["Max guesses", "Min guesses", "Quantity of maximals", "Quantity of minimals"]]
+            stats_header = [["Max guess", "Min guess", "Counter of maximals", "Counter of minimals"]]
             empty_row = [[]]
             dictionary_header = [["Word", "Explanation", "Guess"]]                                                                                                     # during the opening CSV-file
             header = stats_header + [[0, 0, len(shelve_dictionary), len(shelve_dictionary)]] + empty_row + dictionary_header

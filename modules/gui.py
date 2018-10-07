@@ -5,7 +5,7 @@ Created on Sun Sep 30 15:38:50 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Module for creating GUI application using Tkinter library
-Ver 1.1
+Ver 1.1.1
 """
 
 from tkinter import Tk, Button, Entry, Text, Label
@@ -60,4 +60,4 @@ class TextBox(Text):
         self.insert('0.0', text)
 
 if __name__ == "__main__":
-    print("Please do not run this file. It's just a library!")
+    input("Please do not run this file. It's just a library!")
