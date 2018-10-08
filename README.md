@@ -1,3 +1,9 @@
 # my-own-dictionary
-Well, I'm try to improve my English vocabulary. I thought that it's need to have an application which can make and supplement my own dictionary only with words that I've never seen before. In addition it should be able to produce vocabulary testing.
-So, this repository is my try to implement this idea. It will be interesting, stay tune :)
+The application which allows you to improve your vocabulary in foreign language. Full functionality release is available!
+
+dict.pyw - make and fill your personal dictionary
+vocab_tester.pyw - knowledge control of the dictionary
+print_whole_dictionary.py - prints your current dictionary
+shelve_to_csv.py - converting dictionary from old shelve format to CSV
+modules: gui, handler, tester - accessory modules
+lib/dict.csv - dictionary file. CSV file format is available to opening with third party programs such as Excel and etc.
