@@ -5,7 +5,7 @@ Created on Mon Oct  8 09:39:36 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Dictionary handling module
-Ver 3.1
+Ver 3.2
 """
 
 from itertools import islice
@@ -82,6 +82,7 @@ class Handling():
                 self.__set_dictionary_item(word, guess = 0)
                 self.__status_bar.overwrite(word + " - added to dictionary")
             else:
+                self.__explanation.overwrite(self.__dictionary[word][EXPLANATION])
                 self.__status_bar.overwrite("This word is already exists!")
         else:
             self.__status_bar.overwrite("Please enter the word")
