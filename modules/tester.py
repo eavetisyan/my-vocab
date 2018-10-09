@@ -5,7 +5,7 @@ Created on Mon Oct  8 09:40:15 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Testing application module
-Ver 1.1
+Ver 1.2
 """
 
 from itertools import islice
@@ -75,9 +75,10 @@ class Handling():
             self.__explanation.overwrite(task[WORD] + ":\n" + task[EXPLANATION])
             is_correct = False
             for answer in user_answers:                                                                                         # Checking for the right answer
-                if answer in correct_answers:
-                    is_correct = True
-                    break
+                for correct in correct_answers:
+                    if answer in correct:
+                        is_correct = True
+                        break
             if is_correct == True:
                 self.__status_bar.overwrite(task[WORD] + " - you're right!")
                 self.__id[self.__choice][COUNTER] += 1
