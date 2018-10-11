@@ -5,13 +5,13 @@ Created on Sun Oct  7 16:44:24 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Vocabulary testing application
-Ver 2.0
+Ver 1.4
 """
 
 from modules.gui import *
 from modules.tester import *
 
-root = Application(geometry = "412x262", title = "Vocabulary tester 2.0")
+root = Application(geometry = "412x262", title = "Vocabulary tester 2.1")
 
 supposition = EntryField(root)
 supposition.show(row = 0, column = 0, columnspan = 7, sticky = "W, E")

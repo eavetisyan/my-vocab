@@ -5,7 +5,7 @@ Created on Mon Oct  8 09:40:15 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Testing application module
-Ver 1.4
+Ver 1.5
 """
 
 from itertools import islice
@@ -28,6 +28,7 @@ class Handling():
         self.__supposition = supposition
         self.__explanation = explanation
         self.__status_bar = status_bar
+        self.__question = question
         with open(file_name, "r") as file:                                                                                      # Open file for reading just for copying stats and dictionary to RAM
             readed_csv = csv.reader(file)
             self.__read_thru_n_strings(readed_csv, n = 0)                                                                       # Cut off the header
@@ -36,11 +37,10 @@ class Handling():
             for i, line in enumerate(readed_csv):
                 self.__id.append([int(line[GUESS]), i])                                                                         # Create id list which contains guesses and words ids
                 self.__dictionary[i] = (line[WORD], line[EXPLANATION])                                                          # and create a dictionary with ids as keys and lists of words and explanations as values
-        self.__question = question
         self.__dictionary_length = len(self.__dictionary)
         self.__lower_bound = self.__dictionary_length - 1 - self.__dictionary_length // 3                                       # Boundary is a last third of the dictionary
         self.__id.sort(reverse = True)                                                                                          # Sort IDs by descending order
-        self.__get_task(self.__lower_bound, self.__dictionary_length)
+        self.__get_task(self.__lower_bound, self.__dictionary_length, previous_id = None)
     
     def __read_thru_n_strings(self, iterable_object, n):
         """Jump from current line to n-distance"""
@@ -57,11 +57,14 @@ class Handling():
                 row = self.__dictionary[word_id][WORD], self.__dictionary[word_id][EXPLANATION], word_guess
                 csv_file.writerow(row)                                                                                          # Write dictionary to CSV
     
-    def __get_task(self, lower_bound, upper_bound):
+    def __get_task(self, lower_bound, upper_bound, previous_id):
         """Select the word from the dictionary"""
         if self.__dictionary:
-            self.__choice = randrange(lower_bound, upper_bound)                                                                 # Get the word from the end of IDs
-            self.__task_id = self.__id[self.__choice][ID]
+            while True:
+                self.__choice = randrange(lower_bound, upper_bound)                                                             # Get the word from the end of IDs
+                self.__task_id = self.__id[self.__choice][ID]
+                if previous_id != self.__task_id:
+                    break
             task = self.__dictionary[self.__task_id]
             self.__question.overwrite(task[WORD])
     
@@ -88,7 +91,7 @@ class Handling():
                 if self.__id[self.__choice][COUNTER] > 0:                                                                       # Decrease the guess counter if it is above zero
                     self.__id[self.__choice][COUNTER] -= 1
                 self.__status_bar.overwrite("Nope")
-            self.__get_task(self.__lower_bound, self.__dictionary_length)
+            self.__get_task(self.__lower_bound, self.__dictionary_length, self.__task_id)
         else:
             self.__status_bar.overwrite("The dictionary is empty!")
     
