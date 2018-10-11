@@ -5,7 +5,7 @@ Created on Mon Oct  8 09:40:15 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Testing application module
-Ver 1.3
+Ver 1.4
 """
 
 from itertools import islice
@@ -81,10 +81,12 @@ class Handling():
                         break
             if is_correct == True:
                 self.__status_bar.overwrite(task[WORD] + " - you're right!")
-                self.__id[self.__choice][COUNTER] += 1
+                self.__id[self.__choice][COUNTER] += 2
                 self.__id.sort(reverse = True)
                 self.__ovewrite_dictionary()
             else:
+                if self.__id[self.__choice][COUNTER] > 0:                                                                       # Decrease the guess counter if it is above zero
+                    self.__id[self.__choice][COUNTER] -= 1
                 self.__status_bar.overwrite("Nope")
             self.__get_task(self.__lower_bound, self.__dictionary_length)
         else:
