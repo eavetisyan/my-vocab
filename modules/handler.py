@@ -5,19 +5,13 @@ Created on Mon Oct  8 09:39:36 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Dictionary handling module
-Ver 3.2
+Ver 3.3
 """
 
-from itertools import islice
 import csv
 
-WORD = 0
-VALUE = 1
 EXPLANATION = 0
 GUESS = 1
-
-DESCRIPTION = 1
-COUNTER = 2
 
 class Handling():
     """Dictionary management procedures"""
@@ -29,27 +23,20 @@ class Handling():
         self.__status_bar = status_bar
         with open(file_name, "r") as file:                                                                                      # Open file for reading just for copying stats and dictionary to RAM
             readed_csv = csv.reader(file)
-            self.__read_thru_n_strings(readed_csv, n = 0)                                                                       # Cut off the header
-            self.__dictionary = {line[WORD] : [line[DESCRIPTION], int(line[COUNTER])] for line in readed_csv}                   # Constructing dictionary as "word : [explanation, guess]" items
-    
-    def __read_thru_n_strings(self, iterable_object, n):
-        """Jump from current line to n-distance"""
-        return next(islice(iterable_object, n, None))
-    
+            next(readed_csv)                                                                                                    # Cut off the header
+            self.__dictionary = dict()
+            for word, explanation, guess in readed_csv:                                                                         # Constructing dictionary as "word : [explanation, guess]" items
+                self.__dictionary[word] = [explanation, guess]
+        
     def __ovewrite_dictionary(self):
         """Overwriting an existing dictionary"""
-        header = ["Word", "Explanation", "Guess"]                                                                    # Dictionary heade which were cutted off during the opening CSV-file
+        header = ["Word", "Explanation", "Guess"]                                                                               # Dictionary heade which were cutted off during the opening CSV-file
         with open(self.__file_name, "w") as file:
             csv_file = csv.writer(file, delimiter = ",", lineterminator = "\n")
-            csv_file.writerow(header)                                                                                          # Write headers and stats to CSV
-            for row in self.__dictionary_lines(self.__dictionary):
+            csv_file.writerow(header)                                                                                           # Write headers and stats to CSV
+            for word in sorted(self.__dictionary.keys()):                                                                       # Order dictionary by alphabet
+                row = word, self.__dictionary[word][EXPLANATION], self.__dictionary[word][GUESS]
                 csv_file.writerow(row)                                                                                          # Write dictionary to CSV
-    
-    def __dictionary_lines(self, dictionary):
-        """Get next dictionary line as list"""
-        for line in dictionary.items():
-            dictionary_string = [line[WORD], line[VALUE][EXPLANATION], line[VALUE][GUESS]]
-            yield dictionary_string
     
     def __get_word(self):
         """Pop the word from text entry and set the first letter to upper case"""
@@ -116,10 +103,6 @@ class Handling():
     def __set_dictionary_item(self, word, guess):
         self.__dictionary[word] = [self.__explanation.get('0.0', 'end - 1c'), guess]
         self.__ovewrite_dictionary()
-    
-    def __sort_dictionary(self, dictionary, reverse = True):
-        """Sort dictionary items by guess values"""
-        return dict(sorted(dictionary.items(), key = lambda value: value[VALUE][GUESS], reverse = reverse))
     
 if __name__ == "__main__":
     input("Please do not run this file. It's just a library")

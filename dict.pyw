@@ -5,13 +5,13 @@ Created on Sun Oct  7 00:12:25 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Application that allows you to create and fill your own dictionary
-Ver 3.0
+Ver 3.1
 """
 
 from modules.gui import *
 from modules.handler import *
     
-root = Application(geometry = "449x145", title = "My own dictionary 3.0")
+root = Application(geometry = "449x145", title = "My own dictionary 3.1")
 word_input = EntryField(root)
 word_input.show(row = 0, column = 0)
 

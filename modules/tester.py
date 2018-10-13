@@ -8,74 +8,65 @@ Testing application module
 Ver 1.5
 """
 
-from itertools import islice
 from random import randrange
+from operator import itemgetter
 from re import sub
 import csv
 
-WORD = 0
-EXPLANATION = 1
-GUESS = 2
-
-ID = 1
-COUNTER = 0
+WORD = 1
+GUESS = 0
 
 class Handling():
     """Dictionary management procedures"""
-    def __init__(self, file_name, supposition, explanation, status_bar, question):
+    def __init__(self, file_name, supposition, explanation_box, status_bar, question):
         """Get dictionary from CSV-file"""
         self.__file_name = file_name
         self.__supposition = supposition
-        self.__explanation = explanation
+        self.__explanation = explanation_box
         self.__status_bar = status_bar
         self.__question = question
         with open(file_name, "r") as file:                                                                                      # Open file for reading just for copying stats and dictionary to RAM
             readed_csv = csv.reader(file)
-            self.__read_thru_n_strings(readed_csv, n = 0)                                                                       # Cut off the header
-            self.__id = list()
-            self.__dictionary = dict()
-            for i, line in enumerate(readed_csv):
-                self.__id.append([int(line[GUESS]), i])                                                                         # Create id list which contains guesses and words ids
-                self.__dictionary[i] = (line[WORD], line[EXPLANATION])                                                          # and create a dictionary with ids as keys and lists of words and explanations as values
-        self.__dictionary_length = len(self.__dictionary)
-        self.__lower_bound = self.__dictionary_length - 1 - self.__dictionary_length // 3                                       # Boundary is a last third of the dictionary
-        self.__id.sort(reverse = True)                                                                                          # Sort IDs by descending order
-        self.__get_task(self.__lower_bound, self.__dictionary_length, previous_id = None)
-    
-    def __read_thru_n_strings(self, iterable_object, n):
-        """Jump from current line to n-distance"""
-        return next(islice(iterable_object, n, None))
-    
+            next(readed_csv)                                                                                                    # Cut off the header
+            self.__words = list()
+            self.__explanation_of = dict()
+            for word, explanation, guess in readed_csv:
+                self.__words.append([int(guess), word])                                                                         # Create words list which contains lists of [guess, word] values
+                self.__explanation_of[word] = explanation                                                                       # and create a dictionary with words as keys and explanations as values
+        self.__dictionary_length = len(self.__explanation_of)
+        self.__lower_bound = self.__dictionary_length - 1 - self.__dictionary_length // 3                                       # The boundary is a last third of the dictionary
+        self.__words.sort(reverse = True)                                                                                       # Sort words by descending order of guesses
+        self.__get_task(self.__lower_bound, self.__dictionary_length, previous_task = None)
+        
     def __ovewrite_dictionary(self):
         """Overwriting an existing dictionary"""
         header = ["Word", "Explanation", "Guess"]                                                                               # Dictionary heade which were cutted off during the opening CSV-file
         with open(self.__file_name, "w") as file:
             csv_file = csv.writer(file, delimiter = ",", lineterminator = "\n")
             csv_file.writerow(header)                                                                                           # Write headers and stats to CSV
-            for line in self.__id:
-                word_guess, word_id = line
-                row = self.__dictionary[word_id][WORD], self.__dictionary[word_id][EXPLANATION], word_guess
+            for guess, word in sorted(self.__words, key = itemgetter(WORD)):
+                row = word, self.__explanation_of[word], guess
                 csv_file.writerow(row)                                                                                          # Write dictionary to CSV
     
-    def __get_task(self, lower_bound, upper_bound, previous_id):
+    def __get_task(self, lower_bound, upper_bound, previous_task):
         """Select the word from the dictionary"""
-        if self.__dictionary:
+        if upper_bound is not 0:
             while True:
-                self.__choice = randrange(lower_bound, upper_bound)                                                             # Get the word from the end of IDs
-                self.__task_id = self.__id[self.__choice][ID]
-                if previous_id != self.__task_id:
+                self.__choice = randrange(lower_bound, upper_bound)                                                             # Get the word from the end of __words
+                self.__task = self.__words[self.__choice][WORD]
+                if previous_task != self.__task:
                     break
-            task = self.__dictionary[self.__task_id]
-            self.__question.overwrite(task[WORD])
+            self.__question.overwrite(self.__task)
     
     def implement_an_answer(self):
         """One round of the test"""
-        if self.__dictionary:
+        if not self.__explanation_of:
+            self.__status_bar.overwrite("The dictionary is empty!")
+        else:
             user_answers = self.__split_data(self.__supposition.get())
-            task = self.__dictionary[self.__task_id]
-            correct_answers = self.__split_data(task[EXPLANATION])
+            correct_answers = self.__split_data(self.__explanation_of[self.__task])
             self.__supposition.overwrite("")
-            self.__explanation.overwrite(task[WORD] + ":\n" + task[EXPLANATION])
+            self.__explanation.overwrite(self.__task + ":\n" + self.__explanation_of[self.__task])
             is_correct = False
             for answer in user_answers:                                                                                         # Checking for the right answer
                 for correct in correct_answers:
@@ -83,17 +74,15 @@ class Handling():
                         is_correct = True
                         break
             if is_correct == True:
-                self.__status_bar.overwrite(task[WORD] + " - you're right!")
-                self.__id[self.__choice][COUNTER] += 2
-                self.__id.sort(reverse = True)
+                self.__status_bar.overwrite(self.__task + " - you're right!")
+                self.__words[self.__choice][GUESS] += 2
+                self.__words.sort(reverse = True)
                 self.__ovewrite_dictionary()
             else:
-                if self.__id[self.__choice][COUNTER] > 0:                                                                       # Decrease the guess counter if it is above zero
-                    self.__id[self.__choice][COUNTER] -= 1
+                if self.__words[self.__choice][GUESS] > 0:                                                                    # Decrease the guess GUESS if it is above zero
+                    self.__words[self.__choice][GUESS] -= 1
                 self.__status_bar.overwrite("Nope")
-            self.__get_task(self.__lower_bound, self.__dictionary_length, self.__task_id)
-        else:
-            self.__status_bar.overwrite("The dictionary is empty!")
+            self.__get_task(self.__lower_bound, self.__dictionary_length, self.__task)
     
     def __split_data(self, string):
         """Represent any string as list of words no less than 3 letters"""
