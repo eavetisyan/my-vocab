@@ -5,7 +5,7 @@ Created on Mon Oct  8 09:40:15 2018
 @author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
 ----------------
 Testing application module
-Ver 1.5
+Ver 1.6
 """
 
 from random import randrange
@@ -90,7 +90,7 @@ class Handling():
         string = sub(r" - ", " ", string)                                                                                       # Remove dashes
         string = sub(r"т\.\w\.", "", string)                                                                                    # Remove abbreviations
         string = sub(r"\b\w{1,3}\b", "", string)                                                                                # Remove prepositions (words less than 3 letters)
-        string = sub(r"[\.,;<>\"?/\\!\n_\(\)]", " ", string)                                                                    # Replace symbols with spaces
+        string = sub(r"[\.,;:<>\"?/\\!\n_\(\)]", " ", string)                                                                   # Replace symbols with spaces
         string = sub(r"[a-zA-z]", "", string)                                                                                   # Remove Latin alphabet
         return string.split()                                                                                                   # Split words by space
     
