@@ -13,7 +13,7 @@ from tkinter import (
 from tkinter.scrolledtext import ScrolledText
 
 
-TITLE_BASE = 'My Own Dictionary'
+TITLE_BASE = 'My Vocab'
 
 PARAM_HEIGHT = 'height'
 PARAM_WIDTH = 'width'
