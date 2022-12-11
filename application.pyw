@@ -1,29 +1,160 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Oct  7 00:12:25 2018
+from lib.common import (
+    DictionaryContents,
+    Word,
+    get_word_row,
+)
+from lib.testing_engine import (
+    DictionaryContentsTestingByMeaning,
+    DictionaryContentsTestingByWord,
+)
+from lib.gui import (
+    GUI_ID_MAINTENANCE,
+    GUI_ID_TESTING_BY_MEANING,
+    GUI_ID_TESTING_BY_WORD,
+    get_greeting_gui,
+    GuiMaintenance,
+    GuiTestingByMeaning,
+    GuiTestingByWord,
+    END,
+)
 
-@author: Eduard Avetisyan (ed.avetisyan95@gmail.com)
-----------------
-Application that allows you to create and fill your own dictionary
-Ver 3.1
-"""
 
-from modules.gui import *
-from modules.handler import *
-    
-root = Application(geometry = "449x145", title = "My own dictionary 3.1")
-word_input = EntryField(root)
-word_input.show(row = 0, column = 0)
+DICTIONARY_FILE_PATH = 'dictionary.csv'
 
-explanation = TextBox(root, width = 40, height = 5, wrap = "word")
-explanation.show(row = 0, column = 1, rowspan = 5)
+IDX_GUI_CLS = 0
+IDX_DICTIONARY_CONTENTS_CLS = 1
 
-status_bar = Inscription(root, text = "Ready to go!")
-status_bar.show(row = 7, column = 1, columnspan = 6, sticky = "E, S")
+GUI_ID_MAPPING = {
+    GUI_ID_MAINTENANCE: (
+        GuiMaintenance,
+        DictionaryContents,
+    ),
+    GUI_ID_TESTING_BY_MEANING: (
+        GuiTestingByMeaning,
+        DictionaryContentsTestingByMeaning,
+    ),
+    GUI_ID_TESTING_BY_WORD: (
+        GuiTestingByWord,
+        DictionaryContentsTestingByWord,
+    ),
+}
 
-actions = Handling(file_name = "lib/dict.csv", word_input = word_input, explanation = explanation, status_bar = status_bar)
-    
-buttons = {"Find word" : actions.find_word, "Add word" : actions.add_word, "Edit word" : actions.edit_word, "Delete word" : actions.delete_word}
-root.create_stack_of_buttons(buttons, first_row = 1, column = 0)
 
-root.mainloop()
+class Application:
+
+    gui_entity = None
+    dictionary_contents_entity = None
+    current_word = None
+
+    def run(self):
+
+        greeting_gui = get_greeting_gui(self)
+        greeting_gui.mainloop()
+
+    def open_gui_selected(
+        self,
+        gui_id,
+    ):
+        if not gui_id:
+            return
+
+        self.dictionary_contents_entity = GUI_ID_MAPPING[gui_id][IDX_DICTIONARY_CONTENTS_CLS](DICTIONARY_FILE_PATH)
+
+        self.gui_entity = GUI_ID_MAPPING[gui_id][IDX_GUI_CLS](self)
+        self.gui_entity.fill()
+        self.gui_entity.get_window().mainloop()
+
+    def find_word(self):
+        try:
+            word_entity = self.dictionary_contents_entity.get_word(
+                self.gui_entity.word.get().strip()
+            )
+        except KeyError as e:
+            self.gui_entity.set_label(str(e))
+            return
+
+        self.gui_entity.set_word(word_entity.word)
+        self.gui_entity.set_meaning(word_entity.meaning)
+        self.gui_entity.set_example(word_entity.example)
+
+        label_text = word_entity.word + ' - Found!'
+        self.gui_entity.set_label(label_text)
+
+    def add_word(self):
+        try:
+            word_entity = self._get_word_entity_from_gui()
+            self.dictionary_contents_entity.add_word(word_entity)
+        except (KeyError, ValueError) as e:
+            self.gui_entity.set_label(str(e))
+            return
+
+        label_text = word_entity.word + ' - Added to Your Dictionary'
+        self.gui_entity.set_label(label_text)
+
+    def edit_word(self):
+        try:
+            word_entity = self._get_word_entity_from_gui()
+            self.dictionary_contents_entity.edit_word(word_entity)
+        except (KeyError, ValueError) as e:
+            self.gui_entity.set_label(str(e))
+            return
+
+        label_text = word_entity.word + ' - Edited'
+        self.gui_entity.set_label(label_text)
+
+    def delete_word(self):
+        try:
+            word_entity = self.dictionary_contents_entity.delete_word(
+                self.gui_entity.word.get().strip()
+            )
+        except (KeyError, ValueError) as e:
+            self.gui_entity.set_label(str(e))
+            return
+
+        self.gui_entity.set_word(word_entity.word)
+        self.gui_entity.set_meaning(word_entity.meaning)
+        self.gui_entity.set_example(word_entity.example)
+
+        label_text = word_entity.word + ' - Deleted'
+        self.gui_entity.set_label(label_text)
+
+    def process_answer(self):
+        answer = self.gui_entity.get_answer()
+
+        try:
+            answer_is_correct = self.dictionary_contents_entity.check_answer(answer)
+        except ValueError as e:
+            self.gui_entity.set_label(str(e))
+            return
+
+        label_text = ''
+
+        if answer_is_correct:
+            label_text += 'Correct!'
+        else:
+            label_text += 'Nope!'
+
+        word_entity = self.dictionary_contents_entity.current_word
+
+        label_text += '\n'*2 + word_entity.word + ':\n' + word_entity.meaning
+
+        if word_entity.example:
+            label_text += '\n'*2 + 'Example: ' + word_entity.example
+
+        self.gui_entity.set_label(label_text)
+        self.gui_entity.fill()
+
+    def get_random_word(self):
+        return self.dictionary_contents_entity.get_random_word()
+
+    def _get_word_entity_from_gui(self):
+        return Word(
+            **get_word_row(
+                self.gui_entity.word.get().strip(),
+                self.gui_entity.meaning.get(0.0, END).strip(),
+                self.gui_entity.example.get(0.0, END).strip(),
+            )
+        )
+
+
+Application().run()
