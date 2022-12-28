@@ -13,6 +13,7 @@ from .common import (
 )
 
 
+UPPER_BOUND_LIMIT = 7
 TESTING_TYPE_BY_WORD = 'BY_WORD'
 TESTING_TYPE_BY_MEANING = 'BY_MEANING'
 
@@ -24,7 +25,8 @@ def get_random_word(
     file_length = len(dictionary_sorted)
 
     # We will return the words from the third of the scoreboard which has the minimal scores
-    upper_bound = file_length // 3 + 1
+    # (or the first 7 words from this)
+    upper_bound = min(file_length // 3 + 1, UPPER_BOUND_LIMIT)
     word_selected_idx = randrange(0, upper_bound)
 
     word_selected_row = dictionary_sorted[word_selected_idx]
