@@ -18,26 +18,34 @@ TESTING_TYPE_BY_WORD = 'BY_WORD'
 TESTING_TYPE_BY_MEANING = 'BY_MEANING'
 
 
+def get_dictionary_sorted(
+    dictionary,
+    score_field
+):
+    return sorted(dictionary, key=lambda d: int(d[score_field]))
+    
+
 def get_random_word(
     dictionary_sorted,
     current_word,
 ):
     file_length = len(dictionary_sorted)
-
-    # We will return the words from the third of the scoreboard which has the minimal scores
-    # (or the first 7 words from this)
+    
+    # The word to be chosen is one from the first third of the scoreboard,
+    # but not above than UPPER_BOUND_LIMIT words from this third
     upper_bound = min(file_length // 3 + 1, UPPER_BOUND_LIMIT)
     word_selected_idx = randrange(0, upper_bound)
-
+    
     word_selected_row = dictionary_sorted[word_selected_idx]
-
+    
+    # To avoid repeating the same word in a row
     if current_word and upper_bound > 1 and current_word.word == word_selected_row[KEY_WORD]:
-
+        
         return get_random_word(
             dictionary_sorted,
             current_word,
         )
-
+    
     return Word(**word_selected_row)
 
 
@@ -55,11 +63,14 @@ class DictionaryContentsTestingAbstract(DictionaryContents, metaclass=ABCMeta):
         if not self.file_contents:
             self._read_file()
 
-        self.file_contents.sort(key=lambda d: int(d[self._sort_key]))
+        dictionary_sorted = get_dictionary_sorted(
+            self.file_contents,
+            self._sort_key,
+        )
 
         self.current_word = get_random_word(
-            self.file_contents,
-            self.current_word
+            dictionary_sorted,
+            self.current_word,
         )
 
         return self.current_word
